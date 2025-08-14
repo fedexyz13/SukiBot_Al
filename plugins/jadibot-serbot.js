@@ -80,9 +80,9 @@ blackJBOptions.fromCommand = true
 blackJadiBot(blackJBOptions)
 global.db.data.users[m.sender].Subs = new Date * 1
 } 
-handler.help = ['qr', 'code']
+handler.help = ['serbot', 'serbot --code']
 handler.tags = ['serbot']
-handler.command = ['qr', 'code']
+handler.command = ['serbot', 'serbot --code']
 export default handler 
 
 export async function blackJadiBot(options) {
