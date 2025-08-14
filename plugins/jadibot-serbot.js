@@ -13,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const emoji = "🍓"
 const emoji2 = "🧁"
+const jadi = "jadibot-sessions"
 
 const rtx = `🌸 SubBot — Vinculo por QR 💠
 
@@ -103,7 +104,7 @@ export async function blackJadiBot(options) {
 }
 
     if (connection === "open") {
-    const userName = sock.authState.creds.me.name || "SubBot"
+      const userName = sock.authState.creds.me.name || "SubBot"
       const userJid = sock.authState.creds.me.jid || `${path.basename(pathblackJadiBot)}@s.whatsapp.net`
       console.log(chalk.cyanBright(`🟢 ${userName} conectado como SubBot (${userJid})`))
       sock.isInit = true
@@ -165,5 +166,52 @@ export async function blackJadiBot(options) {
 }, 60000)
 }
 
-// ✅ Exportación para usar desde otros archivos
+// ✅ Exportación para otros módulos
 export const nakanoJadiBot = blackJadiBot
+
+// ✅ Handler para comandos.qr y.code
+const handler = async (m, { conn, args, usedPrefix, command}) => {
+  const botSettings = global.db.data.settings[conn.user.jid] ||= {}
+  if (!botSettings.jadibotmd) return m.reply('⚠️ El comando está desactivado temporalmente.')
+
+  const cooldown = 10000
+  const lastTime = global.db.data.users[m.sender]?.Subs || 0
+  const now = new Date().getTime()
+  if (now - lastTime < cooldown) {
+    const wait = msToTime(cooldown - (now - lastTime))
+    return conn.reply(m.chat, `⏳ Espera ${wait} antes de volver a vincular un SubBot.`, m)
+}
+
+  const activeBots = global.conns.filter(conn => conn.user && conn.ws.socket && conn.ws.socket.readyState!== ws.CLOSED)
+  if (activeBots.length>= 40) {
+    return m.reply(`${emoji2} No hay espacios disponibles para nuevos SubBots.`)
+}
+
+  const id = m.sender.split('@')[0]
+  const sessionPath = path.join(`./${jadi}`, id)
+  if (!fs.existsSync(sessionPath)) fs.mkdirSync(sessionPath, { recursive: true})
+
+  const options = {
+    pathblackJadiBot: sessionPath,
+    m,
+    conn,
+    args,
+    usedPrefix,
+    command,
+    fromCommand: true
+}
+
+  await blackJadiBot(options)
+  global.db.data.users[m.sender].Subs = now
+}
+
+handler.help = ['qr', 'code']
+handler.tags = ['serbot']
+handler.command = ['qr', 'code']
+handler.register = true
+
+export default handler
+
+function msToTime(duration) {
+  const seconds = Math.floor((duration / 1000) % 60)
+  const minutes = Math.floor((duration / (1000 *
