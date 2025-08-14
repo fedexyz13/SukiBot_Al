@@ -31,31 +31,23 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
 let rtx =
-const rtx = `🌸 SubBot — Vinculo por QR 💠
-
-🪄 Vincúlate como SubBot temporal:
-
-1 » Abre WhatsApp y toca los ⋮ tres puntos
-2 » Selecciona *Dispositivos vinculados*
-3 » Pulsa *Vincular dispositivo*
-4 » Escanea el QR encantado en pantalla
-
-⏱️ Este hechizo dura 45 segundos. ¡Activa rápido!
-
-📡 Estado: [ QR pastel activo ]`
-
-const rtx2 = `🌙 SubBot — Vinculo por Código ✧
-
-🔐 Vinculación manual por código:
-
-1 » Abre WhatsApp y toca los ⋮ pétalos mágicos
-2 » Ve a *Dispositivos vinculados*
-3 » Elige *Vincular con número de teléfono*
-4 » Ingresa el código otorgado por el bot
-
-⚠️ Usa una cuenta secundaria (no tu principal)
-
-📡 Estado: [ Código pastel listo ]`
+"🌸 SᴜʙBᴏᴛ — Vɪɴᴄᴜʟᴏ ᴘᴏʀ Qʀ 💠\n\n" +
+"🪄 Vɪɴᴄᴜ́ʟᴀᴛᴇ ᴄᴏᴍᴏ SᴜʙBᴏᴛ ᴛᴇᴍᴘᴏʀᴀʟ:\n\n" +
+"`1` » Aʙʀᴇ WʜᴀᴛsAᴘᴘ ʏ ᴛᴏᴄᴀ ʟᴏs ⋮ ᴛʀᴇs ᴘᴜɴᴛᴏs\n" +
+"`2` » Sᴇʟᴇᴄᴄɪᴏɴᴀ *Dɪsᴘᴏsɪᴛɪᴠᴏs ᴠɪɴᴄᴜʟᴀᴅᴏs*\n" +
+"`3` » Pᴜʟsᴀ *Vɪɴᴄᴜʟᴀʀ ᴅɪsᴘᴏsɪᴛɪᴠᴏ*\n" +
+"`4` » Esᴄᴀɴᴇᴀ ᴇʟ Qʀ ᴇɴᴄᴀɴᴛᴀᴅᴏ ᴇɴ ᴘᴀɴᴛᴀʟʟᴀ\n\n" +
+"⏱️ Esᴛᴇ ʜᴇᴄʜɪᴢᴏ ᴅᴜʀᴀ 45 sᴇɢᴜɴᴅᴏs. ¡Aᴄᴛɪᴠᴀ ʀᴀ́ᴘɪᴅᴏ!\n\n" +
+"📡 Esᴛᴀᴅᴏ: [ Qʀ ᴘᴀsᴛᴇʟ ᴀᴄᴛɪᴠᴏ ]";
+let rtx2 =
+"🌙 SᴜʙBᴏᴛ — Vɪɴᴄᴜʟᴏ ᴘᴏʀ Cᴏ́ᴅɪɢᴏ ✧\n\n" +
+"🔐 Vɪɴᴄᴜʟᴀᴄɪᴏ́ɴ ᴍᴀɴᴜᴀʟ ᴘᴏʀ ᴄᴏ́ᴅɪɢᴏ:\n\n" +
+"`1` » Aʙʀᴇ WʜᴀᴛsAᴘᴘ ʏ ᴛᴏᴄᴀ ʟᴏs ⋮ ᴘᴇ́ᴛᴀʟᴏs ᴍᴀ́ɢɪᴄᴏs\n" +
+"`2` » Vᴇ ᴀ *Dɪsᴘᴏsɪᴛɪᴠᴏs ᴠɪɴᴄᴜʟᴀᴅᴏs*\n" +
+"`3` » Eʟɪɢᴇ *Vɪɴᴄᴜʟᴀʀ ᴄᴏɴ ɴᴜ́ᴍᴇʀᴏ ᴅᴇ ᴛᴇʟᴇ́ғᴏɴᴏ*\n" +
+"`4` » Iɴɢʀᴇsᴀ ᴇʟ ᴄᴏ́ᴅɪɢᴏ ᴏᴛᴏʀɢᴀᴅᴏ ᴘᴏʀ ᴇʟ ʙᴏᴛ\n\n" +
+"⚠️ Usᴀ ᴜɴᴀ ᴄᴜᴇɴᴛᴀ sᴇᴄᴜɴᴅᴀʀɪᴀ (ɴᴏ ᴛᴜ ᴘʀɪɴᴄɪᴘᴀʟ)\n\n" +
+"📡 Esᴛᴀᴅᴏ: [ Cᴏ́ᴅɪɢᴏ ᴘᴀsᴛᴇʟ ʟɪsᴛᴏ ]"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const blackJBOptions = {}
@@ -289,4 +281,4 @@ hours = (hours < 10) ? '0' + hours : hours
 minutes = (minutes < 10) ? '0' + minutes : minutes
 seconds = (seconds < 10) ? '0' + seconds : seconds
 return minutes + ' m y ' + seconds + ' s '
-    }
+}
