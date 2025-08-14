@@ -214,4 +214,13 @@ export default handler
 
 function msToTime(duration) {
   const seconds = Math.floor((duration / 1000) % 60)
-  const minutes = Math.floor((duration / (1000 *
+  const minutes = Math.floor((duration / (1000 * 60)) % 60)
+  const hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
+
+  const parts = []
+  if (hours) parts.push(`${hours}h`)
+  if (minutes) parts.push(`${minutes}m`)
+  parts.push(`${seconds}s`)
+
+  return parts.join(' ')
+}
