@@ -16,7 +16,6 @@ let crm3 = "SBpbmZvLWRvbmFyLmpz";
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz";
 let drm1 = "";
 let drm2 = "";
-
 const rtx = `🌸 SubBot — Vinculo por QR 💠
 
 🪄 Vincúlate como SubBot temporal:
@@ -42,7 +41,6 @@ const rtx2 = `🌙 SubBot — Vinculo por Código ✧
 ⚠️ Usa una cuenta secundaria (no tu principal)
 
 📡 Estado: [ Código pastel listo ]`
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const nakanoJBOptions = {};
