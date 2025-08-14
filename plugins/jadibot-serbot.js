@@ -7,10 +7,7 @@ import pino from "pino"
 import chalk from "chalk"
 import * as ws from "ws"
 import { makeWASocket} from "../lib/simple.js"
-import { fileURLToPath} from "url"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 const emoji = "🍓"
 const emoji2 = "🧁"
 const jadi = "jadibot-sessions"
@@ -43,24 +40,12 @@ const rtx2 = `🌙 SubBot — Vinculo por Código ✧
 
 export async function blackJadiBot(options) {
   let { pathblackJadiBot, m, conn, args, usedPrefix, command} = options
-  const mcode = args.some(arg => /(--code|code)/.test(arg?.trim()))
-  args = args.map(arg => arg.replace(/^--code$|^code$/, "").trim()).filter(Boolean)
+  const mcode = command === 'code'
 
   const pathCreds = path.join(pathblackJadiBot, "creds.json")
   if (!fs.existsSync(pathblackJadiBot)) fs.mkdirSync(pathblackJadiBot, { recursive: true})
 
-  try {
-    if (args[0]) {
-      const decoded = Buffer.from(args[0], "base64").toString("utf-8")
-      fs.writeFileSync(pathCreds, JSON.stringify(JSON.parse(decoded), null, "\t"))
-}
-} catch {
-    conn.reply(m.chat, `${emoji} Usa correctamente el comando » ${usedPrefix + command} code`, m)
-    return
-}
-
   const { version} = await fetchLatestBaileysVersion()
-  const msgRetry = () => {}
   const msgRetryCache = new NodeCache()
   const { state, saveCreds} = await useMultiFileAuthState(pathblackJadiBot)
 
@@ -71,22 +56,19 @@ export async function blackJadiBot(options) {
       creds: state.creds,
       keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent"}))
 },
-    msgRetry,
+    msgRetry: () => {},
     msgRetryCache,
     browser: mcode? ["Ubuntu", "Chrome", "110.0.5585.95"]: ["SubBot", "Chrome", "2.0.0"],
-    version,
-    generateHighQualityLinkPreview: true
+    version
 }
 
   let sock = makeWASocket(connectionOptions)
   sock.isInit = false
-  let isInit = true
 
-  async function connectionUpdate(update) {
-    const { connection, lastDisconnect, isNewLogin, qr} = update
-    if (isNewLogin) sock.isInit = false
+  sock.ev.on("connection.update", async (update) => {
+    const { connection, qr} = update
 
-    if (qr &&!mcode && m?.chat) {
+    if (qr &&!mcode) {
       const txtQR = await conn.sendMessage(m.chat, {
         image: await qrcode.toBuffer(qr, { scale: 8}),
         caption: rtx
@@ -97,92 +79,40 @@ export async function blackJadiBot(options) {
     if (qr && mcode) {
       try {
         let rawCode = await sock.requestPairingCode(m.sender.split("@")[0])
-        let cleanCode = rawCode.replace(/[^0-9]/g, "")
-        let formattedCode = cleanCode.slice(0, 8).match(/.{1,4}/g)?.join("-") || "0000-0000"
+        let formattedCode = rawCode.match(/.{1,4}/g)?.join("-") || rawCode
 
         await conn.sendMessage(m.chat, { text: rtx2}, { quoted: m})
-        await conn.sendMessage(m.chat, { text: `🔐 Tu código de vinculación es:\n\n*${formattedCode}*`, quoted: m})
+        await conn.sendMessage(m.chat, {
+          text: `🔐 Tu código de vinculación es:\n\n*${formattedCode}*\n\n⏱️ Este código expira en pocos minutos.`,
+          quoted: m
+})
         console.log(`Código generado para ${m.sender}: ${formattedCode}`)
 } catch (e) {
-        console.error("❌ Error al generar código de vinculación:", e)
-        await conn.reply(m.chat, "⚠️ No se pudo generar el código. Intenta nuevamente más tarde.", m)
+        console.error("❌ Error al generar código:", e)
+        await conn.reply(m.chat, "⚠️ No se pudo generar el código. Intenta más tarde.", m)
 }
 }
 
     if (connection === "open") {
-      const userName = sock.authState.creds.me.name || "SubBot"
-      const userJid = sock.authState.creds.me.jid || `${path.basename(pathblackJadiBot)}@s.whatsapp.net`
-      console.log(chalk.cyanBright(`🟢 ${userName} conectado como SubBot (${userJid})`))
-      sock.isInit = true
       global.conns.push(sock)
-
-      if (m?.chat) {
-        await conn.sendMessage(m.chat, {
-          text: `@${m.sender.split("@")[0]}, ¡ya estás conectado como SubBot!`,
-          mentions: [m.sender]
+      await conn.sendMessage(m.chat, {
+        text: `@${m.sender.split("@")[0]}, ¡ya estás conectado como SubBot!`,
+        mentions: [m.sender]
 }, { quoted: m})
 }
-}
+})
+
+  sock.ev.on("creds.update", saveCreds)
 }
 
-  let handler = await import("../handler.js")
-  async function creloadHandler(restartConn) {
-    try {
-      const Handler = await import(`../handler.js?update=${Date.now()}`)
-      if (Object.keys(Handler || {}).length) handler = Handler
-} catch (e) {
-      console.error("⚠️ Error al recargar handler:", e)
-}
-
-    if (restartConn) {
-      try { sock.ws.close()} catch {}
-      sock.ev.removeAllListeners()
-      sock = makeWASocket(connectionOptions)
-      isInit = true
-}
-
-    if (!isInit) {
-      sock.ev.off("messages.upsert", sock.handler)
-      sock.ev.off("connection.update", sock.connectionUpdate)
-      sock.ev.off("creds.update", sock.credsUpdate)
-}
-
-    sock.handler = handler.handler.bind(sock)
-    sock.connectionUpdate = connectionUpdate.bind(sock)
-    sock.credsUpdate = saveCreds.bind(sock, true)
-    sock.ev.on("messages.upsert", sock.handler)
-    sock.ev.on("connection.update", sock.connectionUpdate)
-    sock.ev.on("creds.update", sock.credsUpdate)
-    isInit = false
-    return true
-}
-
-  creloadHandler(false)
-
-  setInterval(() => {
-    if (!sock.user) {
-      try { sock.ws.close()} catch {}
-      sock.ev.removeAllListeners()
-      const i = global.conns.indexOf(sock)
-      if (i>= 0) {
-        delete global.conns[i]
-        global.conns.splice(i, 1)
-}
-}
-}, 60000)
-}
-
-// ✅ Exportación para otros módulos
-export const nakanoJadiBot = blackJadiBot
-
-// ✅ Handler para comandos.qr y.code
-const handler = async (m, { conn, args, usedPrefix, command}) => {
+// ✅ Handler que responde a.qr y.code
+async function handler(m, { conn, args, usedPrefix, command}) {
   const botSettings = global.db.data.settings[conn.user.jid] ||= {}
   if (!botSettings.jadibotmd) return m.reply('⚠️ El comando está desactivado temporalmente.')
 
   const cooldown = 10000
+  const now = Date.now()
   const lastTime = global.db.data.users[m.sender]?.Subs || 0
-  const now = new Date().getTime()
   if (now - lastTime < cooldown) {
     const wait = msToTime(cooldown - (now - lastTime))
     return conn.reply(m.chat, `⏳ Espera ${wait} antes de volver a vincular un SubBot.`, m)
@@ -190,7 +120,7 @@ const handler = async (m, { conn, args, usedPrefix, command}) => {
 
   const activeBots = global.conns.filter(conn => conn.user && conn.ws.socket && conn.ws.socket.readyState!== ws.CLOSED)
   if (activeBots.length>= 40) {
-    return m.reply(`${emoji2} No hay espacios disponibles para nuevos SubBots.`)
+    return conn.reply(m.chat, `${emoji2} No hay espacios disponibles para nuevos SubBots.`, m)
 }
 
   const id = m.sender.split('@')[0]
@@ -208,9 +138,11 @@ const handler = async (m, { conn, args, usedPrefix, command}) => {
 }
 
   await blackJadiBot(options)
+  global.db.data.users[m.sender] ||= {}
   global.db.data.users[m.sender].Subs = now
 }
 
+// ✅ Registro del plugin
 handler.help = ['qr', 'code']
 handler.tags = ['serbot']
 handler.command = ['qr', 'code']
@@ -227,6 +159,5 @@ function msToTime(duration) {
   if (hours) parts.push(`${hours}h`)
   if (minutes) parts.push(`${minutes}m`)
   parts.push(`${seconds}s`)
-
   return parts.join(' ')
 }
