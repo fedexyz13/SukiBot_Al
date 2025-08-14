@@ -11,6 +11,7 @@ import fs, {readdirSync, statSync, unlinkSync, existsSync, mkdirSync, readFileSy
 import yargs from 'yargs';
 import {spawn} from 'child_process'
 import lodash from 'lodash'
+import { nakanoJadiBot } from './plugins/jadibot-serbot.js';
 import chalk from 'chalk'
 import syntaxerror from 'syntax-error'
 import {tmpdir} from 'os'
@@ -29,123 +30,30 @@ const {proto} = (await import('@whiskeysockets/baileys')).default
 import pkg from 'google-libphonenumber'
 const { PhoneNumberUtil } = pkg
 const phoneUtil = PhoneNumberUtil.getInstance()
-const {DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser, Browsers} = await import('@whiskeysockets/baileys')
+const {DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser} = await import('@whiskeysockets/baileys')
 import readline, { createInterface } from 'readline'
 import NodeCache from 'node-cache'
 const {CONNECTING} = ws
 const {chain} = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
+//const yuw = dirname(fileURLToPath(import.meta.url))
+//let require = createRequire(megu)
 let { say } = cfonts
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+console.log(chalk.bold.redBright(`\nSUKI ESTA INICIANDO\n`))
 
-async function showBanner() {
-    const title = `
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-░░░░░░░░░╔═══════════════════════╗░░░░░
-░░░░░░░░░║   🏮 𝖲𝗎𝗄𝗂Bot_MD 開始中... 🏮   ║░░░░░
-░░░░░░░░░║   功能已啟動，準備就緒！   ║░░░░░
-░░░░░░░░░║   開發者：fedexyz13         ║░░░░░
-░░░░░░░░░╚═══════════════════════╝░░░░░
-░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+say('SUKIBOT', {
+font: 'block',
+align: 'center',
+colors: ['magentaBright']
+})
 
-    `.split('\n').map(line => chalk.hex('#ff00cc').bold(line)).join('\n')
-
-    const subtitle = chalk.hex('#00eaff').bold('✦ Suki-Bot-MD ✦').padStart(40)
-    const poweredMsg = chalk.hex('#00eaff').italic('powered by Fedexyz')
-    const aiMsg = chalk.hex('#ffb300').bold('🤖 Suki-Bot-MD - Tu compañera virtual')
-    const tips = [
-        chalk.hex('#ffb300')('💡 Tip: Usa /help para ver los comandos disponibles.'),
-        chalk.hex('#00eaff')('� Síguenos en GitHub para actualizaciones.'),
-        chalk.hex('#ff00cc')('✨ Disfruta de la experiencia premium de Suki-Bot-MD.')
-    ]
-    const loadingFrames = [
-        chalk.magentaBright('⠋ Cargando módulos...'),
-        chalk.magentaBright('⠙ Cargando módulos...'),
-        chalk.magentaBright('⠹ Cargando módulos...'),
-        chalk.magentaBright('⠸ Cargando módulos...'),
-        chalk.magentaBright('⠼ Cargando módulos...'),
-        chalk.magentaBright('⠴ Cargando módulos...'),
-        chalk.magentaBright('⠦ Cargando módulos...'),
-        chalk.magentaBright('⠧ Cargando módulos...'),
-        chalk.magentaBright('⠇ Cargando módulos...'),
-        chalk.magentaBright('⠏ Cargando módulos...')
-    ]
-
-    console.clear()
-   
-    console.log(
-        boxen(
-            title + '\n' + subtitle,
-            {
-                padding: 1,
-                margin: 1,
-                borderStyle: 'double',
-                borderColor: 'whiteBright',
-                backgroundColor: 'black',
-                title: 'Suki-Bot-MD',
-                titleAlignment: 'center'
-            }
-        )
-    )
-
-    say('Suki-Bot-MD', {
-        font: 'block',
-        align: 'center',
-        colors: ['blue', 'cyan'],
-        background: 'transparent',
-        letterSpacing: 1,
-        lineHeight: 1
-    })
-    say('powered by Fedexyz', {
-        font: 'console',
-        align: 'center',
-        colors: ['blue'],
-        background: 'transparent'
-    })
-    console.log('\n' + aiMsg + '\n')
-
-    // Animación de carga
-    for (let i = 0; i < 18; i++) {
-        process.stdout.write('\r' + loadingFrames[i % loadingFrames.length])
-        await sleep(70)
-    }
-    process.stdout.write('\r' + ' '.repeat(40) + '\r') 
-
-    // Mensaje de bienvenida
-    console.log(
-        chalk.bold.cyanBright(
-            boxen(
-                chalk.bold('¡Bienvenido a Suki-Bot-MD!\n') +
-                chalk.hex('#00eaff')('La bot está arrancando, por favor espere...') +
-                '\n' +
-                tips.join('\n'),
-                {
-                    padding: 1,
-                    margin: 1,
-                    borderStyle: 'round',
-                    borderColor: 'yellow'
-                }
-            )
-        )
-    )
-    
-    // Efecto de "sparkle" final
-    const sparkles = [
-        chalk.hex('#ff00cc')('✦'), chalk.hex('#00eaff')('✦'), chalk.hex('#ffb300')('✦'),
-        chalk.hex('#00eaff')('✦'), chalk.hex('#ff00cc')('✦'), chalk.hex('#ffb300')('✦')
-    ]
-    let sparkleLine = ''
-    for (let i = 0; i < 30; i++) {
-        sparkleLine += sparkles[i % sparkles.length]
-    }
-    console.log('\n' + sparkleLine + '\n')
-}
-
-// Ejecutar el banner
-await showBanner()
-
+say(`SukiBot_MD by Fedexyz`, {
+font: 'console',
+align: 'center',
+colors: ['blueBright']
+})
 
 protoType()
 serialize()
@@ -166,8 +74,9 @@ const __dirname = global.__dirname(import.meta.url)
 
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse())
 global.prefix = new RegExp('^[#/!.]')
+// global.opts['db'] = process.env['db']
 
-global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile('./database.json'))
+global.db = new Low(/https?:\/\//.test(opts['db'] || '') ? new cloudDBAdapter(opts['db']) : new JSONFile('./src/database/database.json'))
 
 global.DATABASE = global.db 
 global.loadDatabase = async function loadDatabase() {
@@ -216,25 +125,10 @@ opcion = '1'
 }
 if (!methodCodeQR && !methodCode && !fs.existsSync(`./${sessions}/creds.json`)) {
 do {
-opcion = await question(`
-╭─────────────────────────────◉
-│ ${chalk.red.bgBlueBright.bold('    ⚙ MÉTODO DE CONEXIÓN BOT    ')}
-│「 💡 」${chalk.yellow('Selecciona cómo quieres conectarte')}
-│「 📲 」${chalk.yellow.bgRed.bold('1. Escanear Código QR')}
-│「 🔑 」${chalk.red.bgGreenBright.bold('2. Código de Emparejamiento')}
-│
-│「 ℹ️ 」${chalk.gray('Usa el código si tienes problemas con el QR')}
-│「 🚀 」${chalk.gray('Ideal para la primera configuración')}
-│
-│ ${chalk.bold.bgGreen.bold('📦 COMANDOS DISPONIBLES')}
-│「 🛠️ 」${chalk.bold('npm run qr')}     ${chalk.gray('# Inicia con QR')}
-│「 🛠️ 」${chalk.bold('npm run code')}   ${chalk.gray('# Inicia con código')}
-│「 🛠️ 」${chalk.bold('npm start')}      ${chalk.gray('# Inicia normalmente')}
-╰─────────────────────────────◉
-${chalk.magenta('--->')} ${chalk.bold('Elige (1 o 2): ')}`.trim());
+opcion = await question(colores('₪ Elija una opción:\n') + opcionQR('1. Con código QR\n') + opcionTexto('2. Con código de texto de 8 dígitos\n--> '))
 
 if (!/^[1-2]$/.test(opcion)) {
-    console.log(chalk.redBright('✖ Opción inválida. Solo se permite 1 o 2.'));
+console.log(chalk.bold.redBright(`☞ No se permiten numeros que no sean 1 o 2, tampoco letras o símbolos especiales.`))
 }} while (opcion !== '1' && opcion !== '2' || fs.existsSync(`./${sessions}/creds.json`))
 } 
 
@@ -242,30 +136,25 @@ console.info = () => {}
 console.debug = () => {} 
 
 const connectionOptions = {
-  logger: pino({ level: 'silent' }),
-  printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
-  mobile: MethodMobile,
-  browser: opcion == '1' ? Browsers.macOS("Desktop") : methodCodeQR ? Browsers.macOS("Desktop") : Browsers.macOS("Chrome"),
-  auth: {
-    creds: state.creds,
-    keys: makeCacheableSignalKeyStore(state.keys, P({ level: "fatal" }).child({ level: "fatal" })),
-  },
-  markOnlineOnConnect: true,
-  generateHighQualityLinkPreview: true,
-  autoTyping: true,
-  readGroup: true,
-  readPrivate: true,
-  syncFullHistory: false,
-  downloadHistory: false,
-  getMessage: async (clave) => {
-    let jid = jidNormalizedUser(clave.remoteJid)
-    let msg = await store.loadMessage(jid, clave.id)
-    return msg?.message || ""
-  },
-  msgRetryCounterCache,
-  msgRetryCounterMap,
-  defaultQueryTimeoutMs: undefined,
-  version
+logger: pino({ level: 'silent' }),
+printQRInTerminal: opcion == '1' ? true : methodCodeQR ? true : false,
+mobile: MethodMobile, 
+browser: opcion == '1' ? [`${nameqr}`, 'Edge', '20.0.04'] : methodCodeQR ? [`${nameqr}`, 'Edge', '20.0.04'] : ['Ubuntu', 'Edge', '110.0.1587.56'],
+auth: {
+creds: state.creds,
+keys: makeCacheableSignalKeyStore(state.keys, Pino({ level: "fatal" }).child({ level: "fatal" })),
+},
+markOnlineOnConnect: true, 
+generateHighQualityLinkPreview: true, 
+getMessage: async (clave) => {
+let jid = jidNormalizedUser(clave.remoteJid)
+let msg = await store.loadMessage(jid, clave.id)
+return msg?.message || ""
+},
+msgRetryCounterCache,
+msgRetryCounterMap,
+defaultQueryTimeoutMs: undefined,
+version,
 }
 
 global.conn = makeWASocket(connectionOptions);
@@ -279,45 +168,25 @@ if (!!phoneNumber) {
 addNumber = phoneNumber.replace(/[^0-9]/g, '')
 } else {
 do {
-phoneNumber = await question(`
-╭─────────────────────────────◉
-│ ${chalk.black.bgGreenBright.bold('  📞 INGRESO DE NÚMERO WHATSAPP  ')}
-│「 ✨ 」${chalk.whiteBright('Introduce tu número con prefijo de país')}
-│「 🧾 」${chalk.yellowBright('Ejemplo: 57321XXXXXXX')}
-╰─────────────────────────────◉
-${chalk.magentaBright('--->')} ${chalk.bold.greenBright('Número: ')}`.trim());
-
-phoneNumber = phoneNumber.replace(/\D/g, '');
+phoneNumber = await question(chalk.bgBlack(chalk.bold.greenBright(`✦ Por favor, Ingrese el número de WhatsApp.\n${chalk.bold.yellowBright(`✏  Ejemplo: 5023145xxxx`)}\n${chalk.bold.magentaBright('---> ')}`)))
+phoneNumber = phoneNumber.replace(/\D/g,'')
 if (!phoneNumber.startsWith('+')) {
-    phoneNumber = `+${phoneNumber}`;
+phoneNumber = `+${phoneNumber}`
 }
-
-if (!await isValidPhoneNumber(phoneNumber)) {
-    console.log(chalk.redBright('✖ El número ingresado no es válido. Inténtalo nuevamente.\n'));
-}
-
-} while (!await isValidPhoneNumber(phoneNumber));
-
-rl.close();
-
-const addNumber = phoneNumber.replace(/\D/g, '');
-
+} while (!await isValidPhoneNumber(phoneNumber))
+rl.close()
+addNumber = phoneNumber.replace(/\D/g, '')
 setTimeout(async () => {
-    let codeBot = await conn.requestPairingCode(addNumber);
-    codeBot = codeBot?.match(/.{1,4}/g)?.join('-') || codeBot;
-
-    console.log(`
-╭─────────────────────────────◉
-│ ${chalk.black.bgMagentaBright.bold('🔐 CÓDIGO DE VINCULACIÓN GENERADO')}
-│「 📎 」${chalk.whiteBright('Ingresa este código')}
-│「 🔐 」${chalk.bold.red(codeBot)}
-╰─────────────────────────────◉\n`);
+let codeBot = await conn.requestPairingCode(addNumber)
+codeBot = codeBot?.match(/.{1,4}/g)?.join("-") || codeBot
+console.log(chalk.bold.white(chalk.bgMagenta(`✧ CÓDIGO DE VINCULACIÓN ✧`)), chalk.bold.white(chalk.white(codeBot)))
 }, 3000)
 }}}
 }
 
 conn.isInit = false;
 conn.well = false;
+//conn.logger.info(`✦  H E C H O\n`)
 
 if (!opts['test']) {
 if (global.db) setInterval(async () => {
@@ -325,6 +194,8 @@ if (global.db.data) await global.db.write()
 if (opts['autocleartmp'] && (global.support || {}).find) (tmp = [os.tmpdir(), 'tmp', `${jadi}`], tmp.forEach((filename) => cp.spawn('find', [filename, '-amin', '3', '-type', 'f', '-delete'])));
 }, 30 * 1000);
 }
+
+// if (opts['server']) (await import('./server.js')).default(global.conn, PORT);
 
 async function connectionUpdate(update) {
 const {connection, lastDisconnect, isNewLogin} = update;
@@ -341,15 +212,11 @@ if (opcion == '1' || methodCodeQR) {
 console.log(chalk.bold.yellow(`\n❐ ESCANEA EL CÓDIGO QR EXPIRA EN 45 SEGUNDOS`))}
 }
 if (connection == 'open') {
-console.log(chalk.bold.green('\n✨️ Suki-Bot-MD ya esta conectada ✨️'))
+console.log(chalk.bold.green('\nSe conecto a NagiBotV2 correctamente ╰‿╯'))
 }
 let reason = new Boom(lastDisconnect?.error)?.output?.statusCode
 if (connection === 'close') {
-if (reason === 429) {
-console.log(chalk.bold.redBright(`\n⚠︎ LÍMITE DE TASA EXCEDIDO, ESPERANDO 30 SEGUNDOS ANTES DE RECONECTAR...`))
-await new Promise(resolve => setTimeout(resolve, 30000))
-await global.reloadHandler(true).catch(console.error)
-} else if (reason === DisconnectReason.badSession) {
+if (reason === DisconnectReason.badSession) {
 console.log(chalk.bold.cyanBright(`\n⚠︎ SIN CONEXIÓN, BORRE LA CARPETA ${global.sessions} Y ESCANEA EL CÓDIGO QR ⚠︎`))
 } else if (reason === DisconnectReason.connectionClosed) {
 console.log(chalk.bold.magentaBright(`\n╭┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄ ☹\n┆ ⚠︎ CONEXION CERRADA, RECONECTANDO....\n╰┄┄┄┄┄┄┄┄┄┄┄┄┄┄ • • • ┄┄┄┄┄┄┄┄┄┄┄┄┄┄ ☹`))
@@ -389,11 +256,7 @@ try {
 global.conn.ws.close()
 } catch { }
 conn.ev.removeAllListeners()
-global.conn = makeWASocket(connectionOptions, {
-  chats: oldChats,
-  retryRequestDelayMs: 10000, // Increase delay between retries
-  maxRetries: 3 // Limit number of retries
-})
+global.conn = makeWASocket(connectionOptions, {chats: oldChats})
 isInit = true
 }
 if (!isInit) {
@@ -402,8 +265,7 @@ conn.ev.off('connection.update', conn.connectionUpdate)
 conn.ev.off('creds.update', conn.credsUpdate)
 }
 
-conn.handler = handler.handler ? handler.handler.bind(conn) : conn.handler
-
+conn.handler = handler.handler.bind(global.conn)
 conn.connectionUpdate = connectionUpdate.bind(global.conn)
 conn.credsUpdate = saveCreds.bind(global.conn, true)
 
@@ -416,17 +278,7 @@ const chats = Object.entries(conn.chats).filter(([jid, chat]) => !jid.endsWith('
 const chats = Object.entries(conn.chats).filter(([jid, chat]) => !jid.endsWith('@g.us') && chat.isChats).map((v) => v[0])
 }
 
-// Manejar eventos de mensajes
-conn.ev.on('messages.upsert', async (m) => {
-    if (m.messages && m.messages[0] && m.messages[0].key && m.messages[0].key.remoteJid) {
-        const jid = m.messages[0].key.remoteJid;
-        await conn.sendPresenceUpdate('composing', jid);
-        await conn.handler(m);
-        await conn.readMessages([m.messages[0].key]);
-        await conn.sendPresenceUpdate('paused', jid);
-    }
-});
-
+conn.ev.on('messages.upsert', conn.handler)
 conn.ev.on('connection.update', conn.connectionUpdate)
 conn.ev.on('creds.update', conn.credsUpdate)
 isInit = false
@@ -437,7 +289,7 @@ return true
 
 global.rutaJadiBot = join(__dirname, './JadiBots')
 
-if (global.yukiJadibts) {
+if (global.nagiJadibts) {
 if (!existsSync(global.rutaJadiBot)) {
 mkdirSync(global.rutaJadiBot, { recursive: true }) 
 console.log(chalk.bold.cyan(`La carpeta: ${jadi} se creó correctamente.`))
@@ -452,7 +304,7 @@ for (const gjbts of readRutaJadiBot) {
 const botPath = join(rutaJadiBot, gjbts)
 const readBotPath = readdirSync(botPath)
 if (readBotPath.includes(creds)) {
-yukiJadiBot({pathYukiJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot'})
+nagiJadiBot({pathnagiJadiBot: botPath, m: null, conn, args: '', usedPrefix: '/', command: 'serbot'})
 }
 }
 }
