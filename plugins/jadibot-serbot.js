@@ -1,35 +1,24 @@
-/*⚠ PROHIBIDO EDITAR ⚠
-Este codigo fue modificado, adaptado y mejorado por
-- ReyEndymion >> https://github.com/ReyEndymion
-El codigo de este archivo esta inspirado en el codigo original de:
-- Aiden_NotLogic >> https://github.com/ferhacks
-*El archivo original del MysticBot-MD fue liberado en mayo del 2024 aceptando su liberacion*
-El codigo de este archivo fue parchado en su momento por:
-- BrunoSobrino >> https://github.com/BrunoSobrino
-Contenido adaptado por:
-- GataNina-Li >> https://github.com/GataNina-Li
-- elrebelde21 >> https://github.com/elrebelde21
-*/
-
-const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion, Browsers } = (await import("@whiskeysockets/baileys"));
+const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion, Browsers} = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
 import path from "path"
 import pino from 'pino'
 import chalk from 'chalk'
-import util from 'util' 
+import util from 'util'
 import * as ws from 'ws'
-const { child, spawn, exec } = await import('child_process')
-const { CONNECTING } = ws
-import { makeWASocket } from '../lib/simple.js'
-import { fileURLToPath } from 'url'
+const { child, spawn, exec} = await import('child_process')
+const { CONNECTING} = ws
+import { makeWASocket} from '../lib/simple.js'
+import { fileURLToPath} from 'url'
+
 let crm1 = "Y2QgcGx1Z2lucy"
 let crm2 = "A7IG1kNXN1b"
 let crm3 = "SBpbmZvLWRvbmFyLmpz"
 let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
+
 let rtx =
 "🌸 SᴜʙBᴏᴛ — Vɪɴᴄᴜʟᴏ ᴘᴏʀ Qʀ 💠\n\n" +
 "🪄 Vɪɴᴄᴜ́ʟᴀᴛᴇ ᴄᴏᴍᴏ SᴜʙBᴏᴛ ᴛᴇᴍᴘᴏʀᴀʟ:\n\n" +
@@ -38,54 +27,115 @@ let rtx =
 "`3` » Pᴜʟsᴀ *Vɪɴᴄᴜʟᴀʀ ᴅɪsᴘᴏsɪᴛɪᴠᴏ*\n" +
 "`4` » Esᴄᴀɴᴇᴀ ᴇʟ Qʀ ᴇɴᴄᴀɴᴛᴀᴅᴏ ᴇɴ ᴘᴀɴᴛᴀʟʟᴀ\n\n" +
 "⏱️ Esᴛᴇ ʜᴇᴄʜɪᴢᴏ ᴅᴜʀᴀ 45 sᴇɢᴜɴᴅᴏs. ¡Aᴄᴛɪᴠᴀ ʀᴀ́ᴘɪᴅᴏ!\n\n" +
-"📡 Esᴛᴀᴅᴏ: [ Qʀ ᴘᴀsᴛᴇʟ ᴀᴄᴛɪᴠᴏ ]";
-text: rtx2 + `\n\n🔢 Cᴏ́ᴅɪɢᴏ ᴅᴇ ᴠɪɴᴄᴜʟᴀᴄɪᴏ́ɴ:\n*${formattedCode}*`,
-  footer: 'Toca el botón para copiar el código',
-  buttons: [
-    {
-      buttonId: `.copiar ${formattedCode}`,
-      buttonText: { displayText: '📋 Copiar código'},
-      type: 1
-}
-  ],
-  headerType: 1
-}, { quoted: m})
+"📡 Esᴛᴀᴅᴏ: [ Qʀ ᴘᴀsᴛᴇʟ ᴀᴄᴛɪᴠᴏ ]"
+
+let rtx2 =
+"🌙 SᴜʙBᴏᴛ — Vɪɴᴄᴜʟᴏ ᴘᴏʀ Cᴏ́ᴅɪɢᴏ ✧\n\n" +
+"🔐 Vɪɴᴄᴜʟᴀᴄɪᴏ́ɴ ᴍᴀɴᴜᴀʟ ᴘᴏʀ ᴄᴏ́ᴅɪɢᴏ:\n\n" +
+"`1` » Aʙʀᴇ WʜᴀᴛsAᴘᴘ ʏ ᴛᴏᴄᴀ ʟᴏs ⋮ ᴘᴇ́ᴛᴀʟᴏs ᴍᴀ́ɢɪᴄᴏs\n" +
+"`2` » Vᴇ ᴀ *Dɪsᴘᴏsɪᴛɪᴠᴏs ᴠɪɴᴄᴜʟᴀᴅᴏs*\n" +
+"`3` » Eʟɪɢᴇ *Vɪɴᴄᴜʟᴀʀ ᴄᴏɴ ɴᴜ́ᴍᴇʀᴏ ᴅᴇ ᴛᴇʟᴇ́ғᴏɴᴏ*\n" +
+"`4` » Iɴɢʀᴇsᴀ ᴇʟ ᴄᴏ́ᴅɪɢᴏ ᴏᴛᴏʀɢᴀᴅᴏ ᴘᴏʀ ᴇʟ ʙᴏᴛ\n\n" +
+"⚠️ Usᴀ ᴜɴᴀ ᴄᴜᴇɴᴛᴀ sᴇᴄᴜɴᴅᴀʀɪᴀ (ɴᴏ ᴛᴜ ᴘʀɪɴᴄɪᴘᴀʟ)\n\n" +
+"📡 Esᴛᴀᴅᴏ: [ Cᴏ́ᴅɪɢᴏ ᴘᴀsᴛᴇʟ ʟɪsᴛᴏ ]"
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const blackJBOptions = {}
-if (global.conns instanceof Array) console.log()
-else global.conns = []
-let handler = async (m, { conn, args, usedPrefix, command, isOwner }) => {
-if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) {
-return m.reply(` El Comando *${command}* está desactivado temporalmente.`)
+
+if (!(global.conns instanceof Array)) global.conns = []
+
+let handler = async (m, { conn, args, usedPrefix, command, isOwner}) => {
+  if (!globalThis.db.data.settings[conn.user.jid].jadibotmd) {
+    return m.reply(` El Comando *${command}* está desactivado temporalmente.`)
 }
-let time = global.db.data.users[m.sender].Subs + 120000
-if (new Date - global.db.data.users[m.sender].Subs < 120000) return conn.reply(m.chat, `${emoji} Debes esperar ${msToTime(time - new Date())} para volver a vincular un *Sub-Bot.*`, m)
-const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])]
-const subBotsCount = subBots.length
-if (subBotsCount === 100) {
-return m.reply(`${emoji2} No se han encontrado espacios para *Sub-Bots* disponibles.`)
+
+  let time = global.db.data.users[m.sender].Subs + 120000
+  if (new Date - global.db.data.users[m.sender].Subs < 120000) {
+    return conn.reply(m.chat, `${emoji} Debes esperar ${msToTime(time - new Date())} para volver a vincular un *Sub-Bot.*`, m)
 }
-let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
-let id = `${who.split`@`[0]}`
-let pathblackJadiBot = path.join(`./${jadi}/`, id)
-if (!fs.existsSync(pathblackJadiBot)){
-fs.mkdirSync(pathblackJadiBot, { recursive: true })
+
+  const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState!== ws.CLOSED)])]
+  if (subBots.length>= 100) {
+    return m.reply(`${emoji2} No se han encontrado espacios para *Sub-Bots* disponibles.`)
 }
-blackJBOptions.pathblackJadiBot = pathblackJadiBot
-blackJBOptions.m = m
-blackJBOptions.conn = conn
-blackJBOptions.args = args
-blackJBOptions.usedPrefix = usedPrefix
-blackJBOptions.command = command
-blackJBOptions.fromCommand = true
-blackJadiBot(blackJBOptions)
-global.db.data.users[m.sender].Subs = new Date * 1
-} 
+
+  let who = m.mentionedJid?.[0] || (m.fromMe? conn.user.jid: m.sender)
+  let id = `${who.split`@`[0]}`
+  let pathblackJadiBot = path.join(`./${jadi}/`, id)
+  if (!fs.existsSync(pathblackJadiBot)) {
+    fs.mkdirSync(pathblackJadiBot, { recursive: true})
+}
+
+  blackJBOptions.pathblackJadiBot = pathblackJadiBot
+  blackJBOptions.m = m
+  blackJBOptions.conn = conn
+  blackJBOptions.args = args
+  blackJBOptions.usedPrefix = usedPrefix
+  blackJBOptions.command = command
+  blackJBOptions.fromCommand = true
+
+  const { version} = await fetchLatestBaileysVersion()
+  const msgRetryCache = new NodeCache()
+  const { state, saveCreds} = await useMultiFileAuthState(pathblackJadiBot)
+
+  const sock = makeWASocket({
+    logger: pino({ level: "fatal"}),
+    printQRInTerminal: false,
+    auth: {
+      creds: state.creds,
+      keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "silent"}))
+},
+    msgRetry: () => {},
+    msgRetryCache,
+    browser: ["SubBot", "Chrome", "2.0.0"],
+    version
+})
+
+  sock.ev.on("connection.update", async ({ connection, qr}) => {
+    if (qr && command === 'serbot') {
+      const qrImage = await qrcode.toBuffer(qr, { scale: 8})
+      await conn.sendMessage(m.chat, {
+        image: qrImage,
+        caption: rtx
+}, { quoted: m})
+}
+
+    if (qr && command === 'serbot --code') {
+      let rawCode = await sock.requestPairingCode(m.sender.split("@")[0])
+      let formattedCode = rawCode.match(/.{1,4}/g)?.join("-") || rawCode
+
+      await conn.sendMessage(m.chat, {
+        text: rtx2 + `\n\n🔢 Cᴏ́ᴅɪɢᴏ ᴅᴇ ᴠɪɴᴄᴜʟᴀᴄɪᴏ́ɴ:\n*${formattedCode}*`,
+        footer: 'Toca el botón para copiar el código',
+        buttons: [
+          {
+            buttonId: `.copiar ${formattedCode}`,
+            buttonText: { displayText: '📋 Copiar código'},
+            type: 1
+}
+        ],
+        headerType: 1
+}, { quoted: m})
+}
+
+    if (connection === "open") {
+      global.conns.push(sock)
+      await conn.sendMessage(m.chat, {
+        text: `✅ ¡Conexión establecida!\n@${m.sender.split("@")[0]} ahora está vinculado como SubBot.`,
+        mentions: [m.sender]
+}, { quoted: m})
+}
+})
+
+  sock.ev.on("creds.update", saveCreds)
+  global.db.data.users[m.sender].Subs = new Date * 1
+}
+
 handler.help = ['serbot', 'serbot --code']
 handler.tags = ['serbot']
 handler.command = ['serbot', 'serbot --code']
-export default handler 
+export default handler
 
 export async function blackJadiBot(options) {
 let { pathblackJadiBot, m, conn, args, usedPrefix, command } = options
