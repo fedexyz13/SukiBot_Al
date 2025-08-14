@@ -1,90 +1,91 @@
-import { createHash} from 'crypto'
-import fetch from 'node-fetch'
+let handler = async (m, { conn, command, args, usedPrefix, isOwner, isROwner, isAdmin}) => {
+  const chat = global.db.data.chats[m.chat];
+  const bot = global.db.data.settings[conn.user.jid] || {};
+  const config = command.toLowerCase();
+  const isGroup = m.isGroup;
+  let globalSetting = false;
 
-const handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin}) => {
-  const chat = global.db.data.chats[m.chat]
-  const bot = global.db.data.settings[conn.user.jid] || {}
-  const type = command.toLowerCase()
-  let isGlobal = false
-  let isEnable = chat[type] || bot[type] || false
-
-  // 🧭 Panel de configuración
-  if (!args[0] ||!['on', 'off', 'enable', 'disable'].includes(args[0].toLowerCase())) {
-    const estado = isEnable? '✅ Activado': '❌ Desactivado'
+  if (!args[0]) {
+    const estado = chat[config]? '🟢 ACTIVO': '🔴 INACTIVO';
     return conn.reply(m.chat,
-`📍 *Panel de configuración*
+`🍓 *Panel de configuración de Suki_Bot_MD*
 
-🔧 Comando: *${command}*
-📊 Estado actual: ${estado}
+🧃 Comando: *${command}*
+🎀 Estado actual: ${estado}
 
-Usa uno de estos comandos:
-• *${usedPrefix + command} on* — Activar
-• *${usedPrefix + command} off* — Desactivar`, m)
+✨ Usa uno de estos para ajustar:
+• *${usedPrefix + command} on* — Activar 🌈
+• *${usedPrefix + command} off* — Desactivar 😴`, m);
 }
 
-  const activar = /on|enable/i.test(args[0])
-  const desactivar = /off|disable/i.test(args[0])
-  isEnable = activar? true: desactivar? false: isEnable
+  const activar = /on|activar|enable/i.test(args[0]);
+  const desactivar = /off|desactivar|disable/i.test(args[0]);
+  let valor = activar? true: desactivar? false: null;
 
-  // 🔐 Validación de permisos
-  const requiereAdmin = m.isGroup &&!(isAdmin || isOwner)
-  const requiereOwner =!isOwner
+  if (valor === null) throw `🌸 Usa: *${usedPrefix + command} on/off*`;
 
-  const opcionesGrupo = [
-    'welcome', 'bienvenida', 'reaction', 'reaccion',
-    'detect', 'avisos', 'nsfw', 'modohorny',
-    'antilink', 'antifake', 'autoaceptar', 'aceptarauto',
-    'autorechazar', 'rechazarauto', 'autoresponder', 'autorespond',
-    'antisubbots', 'antibot2', 'antibot', 'antibots',
-    'modoadmin', 'soloadmin'
-  ]
+  // Validar permisos según el comando
+  const permisosGrupo = isGroup &&!(isAdmin || isOwner);
+  const permisosPrivado =!isGroup &&!isOwner;
 
-  const opcionesGlobales = [
-    'antiprivado', 'antiprivate', 'restrict', 'restringir',
-    'jadibotmd', 'modejadibot'
-  ]
+  switch (config) {
+    case 'welcome':
+    case 'bv':
+    case 'bienvenida':
+    case 'reaction':
+    case 'reaccion':
+    case 'detect':
+    case 'detect2':
+    case 'nsfw':
+      if (permisosGrupo || permisosPrivado) throw '⚠️ Solo admins pueden cambiar esto.';
+      chat[config] = valor;
+      break;
 
-  if (opcionesGrupo.includes(type)) {
-    if (requiereAdmin) {
-      global.dfail('admin', m, conn)
-      throw false
+    case 'modoadmin':
+    case 'soloadmin':
+    case 'antisubbots':
+    case 'antisub':
+    case 'antilink':
+    case 'antilink2':
+    case 'antiprivado': // ✅ Nuevo comando agregado
+      if (permisosGrupo) throw '⚠️ Solo admins pueden cambiar esto.';
+      chat[config] = valor;
+      break;
+
+    case 'jadibotmd':
+    case 'modejadibot':
+      if (!isOwner) throw '⚠️ Solo el dueño del bot puede cambiar esto.';
+      bot.jadibotmd = valor;
+      globalSetting = true;
+      break;
+
+    default:
+      return conn.reply(m.chat, '🧁 Esta configuración no existe en el mundo de Suki todavía...', m);
 }
-    chat[type] = isEnable
-} else if (opcionesGlobales.includes(type)) {
-    isGlobal = true
-    if (requiereOwner) {
-      global.dfail('rowner', m, conn)
-      throw false
-}
-    bot[type] = isEnable
-} else {
-    return conn.reply(m.chat, '⚠️ Esta opción no está disponible.', m)
-}
 
-  // ✅ Confirmación
-  const destino = isGlobal? '🌐 Global': '👥 Grupo'
-  const estadoFinal = isEnable? '✅ Activado': '❌ Desactivado'
+  const lugar = globalSetting? '🌐 Aplicado globalmente': '👑 Activado en este grupo';
 
   return conn.reply(m.chat,
-`✅ *Configuración actualizada*
+`✨ *Encanto actualizado con éxito*
 
-🔧 Opción: *${type}*
-📊 Estado: ${estadoFinal}
-📍 Aplicación: ${destino}`, m)
-}
+📌 Opción: *${command}*
+📶 Estado: ${valor? '✅ ACTIVADO': '❌ DESACTIVADO'}
+${lugar}
+
+🌈 Suki ha lanzado el hechizo 🪄`, m);
+};
 
 handler.help = [
-  'welcome', 'bienvenida', 'antiprivado', 'antiprivate',
-  'restrict', 'restringir', 'autolevelup', 'autonivel',
-  'antibot', 'antibots', 'autoaceptar', 'aceptarauto',
-  'autorechazar', 'rechazarauto', 'autoresponder', 'autorespond',
-  'antisubbots', 'antibot2', 'modoadmin', 'soloadmin',
-  'reaction', 'reaccion', 'nsfw', 'modohorny', 'antispam',
-  'jadibotmd', 'modejadibot', 'subbots', 'detect', 'avisos',
-  'antilink', 'antifake'
-]
-handler.tags = ['settings', 'group', 'config']
-handler.command = handler.help
-handler.register = true
+  'welcome', 'bv', 'bienvenida',
+  'reaction', 'reaccion',
+  'detect', 'detect2',
+  'nsfw', 'modoadmin', 'soloadmin',
+  'antisubbots', 'antisub', 'antilink', 'antilink2',
+  'antiprivado', // ✅ Agregado aquí también
+  'jadibotmd', 'modejadibot',
+];
+handler.tags = ['settings', 'group'];
+handler.command = handler.help;
+handler.register = true;
 
-export default handler
+export default handler;
