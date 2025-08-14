@@ -73,10 +73,10 @@ blackJBOptions.fromCommand = true
 blackJadiBot(blackJBOptions)
 global.db.data.users[m.sender].Subs = new Date * 1
 } 
-handler.help = ['serbot', ' qr', 'serbot --code', 'code']
+handler.help = ['qr', 'code']
 handler.tags = ['serbot']
-handler.command = ['serbot', 'qr', 'serbot --code', 'code']
-export default handler  
+handler.command = ['qr', 'code']
+export default handler 
 
 export async function blackJadiBot(options) {
 let { pathblackJadiBot, m, conn, args, usedPrefix, command } = options
@@ -274,4 +274,4 @@ hours = (hours < 10) ? '0' + hours : hours
 minutes = (minutes < 10) ? '0' + minutes : minutes
 seconds = (seconds < 10) ? '0' + seconds : seconds
 return minutes + ' m y ' + seconds + ' s '
-}
+  }
