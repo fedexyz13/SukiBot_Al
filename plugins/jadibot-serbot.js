@@ -39,15 +39,17 @@ let rtx =
 "`4` » Esᴄᴀɴᴇᴀ ᴇʟ Qʀ ᴇɴᴄᴀɴᴛᴀᴅᴏ ᴇɴ ᴘᴀɴᴛᴀʟʟᴀ\n\n" +
 "⏱️ Esᴛᴇ ʜᴇᴄʜɪᴢᴏ ᴅᴜʀᴀ 45 sᴇɢᴜɴᴅᴏs. ¡Aᴄᴛɪᴠᴀ ʀᴀ́ᴘɪᴅᴏ!\n\n" +
 "📡 Esᴛᴀᴅᴏ: [ Qʀ ᴘᴀsᴛᴇʟ ᴀᴄᴛɪᴠᴏ ]";
-let rtx2 =
-"🌙 SᴜʙBᴏᴛ — Vɪɴᴄᴜʟᴏ ᴘᴏʀ Cᴏ́ᴅɪɢᴏ ✧\n\n" +
-"🔐 Vɪɴᴄᴜʟᴀᴄɪᴏ́ɴ ᴍᴀɴᴜᴀʟ ᴘᴏʀ ᴄᴏ́ᴅɪɢᴏ:\n\n" +
-"`1` » Aʙʀᴇ WʜᴀᴛsAᴘᴘ ʏ ᴛᴏᴄᴀ ʟᴏs ⋮ ᴘᴇ́ᴛᴀʟᴏs ᴍᴀ́ɢɪᴄᴏs\n" +
-"`2` » Vᴇ ᴀ *Dɪsᴘᴏsɪᴛɪᴠᴏs ᴠɪɴᴄᴜʟᴀᴅᴏs*\n" +
-"`3` » Eʟɪɢᴇ *Vɪɴᴄᴜʟᴀʀ ᴄᴏɴ ɴᴜ́ᴍᴇʀᴏ ᴅᴇ ᴛᴇʟᴇ́ғᴏɴᴏ*\n" +
-"`4` » Iɴɢʀᴇsᴀ ᴇʟ ᴄᴏ́ᴅɪɢᴏ ᴏᴛᴏʀɢᴀᴅᴏ ᴘᴏʀ ᴇʟ ʙᴏᴛ\n\n" +
-"⚠️ Usᴀ ᴜɴᴀ ᴄᴜᴇɴᴛᴀ sᴇᴄᴜɴᴅᴀʀɪᴀ (ɴᴏ ᴛᴜ ᴘʀɪɴᴄɪᴘᴀʟ)\n\n" +
-"📡 Esᴛᴀᴅᴏ: [ Cᴏ́ᴅɪɢᴏ ᴘᴀsᴛᴇʟ ʟɪsᴛᴏ ]"
+text: rtx2 + `\n\n🔢 Cᴏ́ᴅɪɢᴏ ᴅᴇ ᴠɪɴᴄᴜʟᴀᴄɪᴏ́ɴ:\n*${formattedCode}*`,
+  footer: 'Toca el botón para copiar el código',
+  buttons: [
+    {
+      buttonId: `.copiar ${formattedCode}`,
+      buttonText: { displayText: '📋 Copiar código'},
+      type: 1
+}
+  ],
+  headerType: 1
+}, { quoted: m})
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const blackJBOptions = {}
