@@ -95,12 +95,18 @@ export async function blackJadiBot(options) {
 }
 
     if (qr && mcode) {
-      let secret = await sock.requestPairingCode(m.sender.split("@")[0])
-      secret = secret.match(/.{1,4}/g)?.join("-")
-      const txtCode = await conn.sendMessage(m.chat, { text: rtx2}, { quoted: m})
-      const codeBot = await m.reply(secret)
-      if (txtCode?.key) setTimeout(() => conn.sendMessage(m.sender, { delete: txtCode.key}), 30000)
-      if (codeBot?.key) setTimeout(() => conn.sendMessage(m.sender, { delete: codeBot.key}), 30000)
+      try {
+        let rawCode = await sock.requestPairingCode(m.sender.split("@")[0])
+        let cleanCode = rawCode.replace(/[^0-9]/g, "")
+        let formattedCode = cleanCode.slice(0, 8).match(/.{1,4}/g)?.join("-") || "0000-0000"
+
+        await conn.sendMessage(m.chat, { text: rtx2}, { quoted: m})
+        await conn.sendMessage(m.chat, { text: `🔐 Tu código de vinculación es:\n\n*${formattedCode}*`, quoted: m})
+        console.log(`Código generado para ${m.sender}: ${formattedCode}`)
+} catch (e) {
+        console.error("❌ Error al generar código de vinculación:", e)
+        await conn.reply(m.chat, "⚠️ No se pudo generar el código. Intenta nuevamente más tarde.", m)
+}
 }
 
     if (connection === "open") {
