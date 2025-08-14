@@ -1,4 +1,8 @@
-import { useMultiFileAuthState, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} from "@whiskeysockets/baileys"
+import {
+  useMultiFileAuthState,
+  makeCacheableSignalKeyStore,
+  fetchLatestBaileysVersion
+} from "@whiskeysockets/baileys"
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
 import fs from "fs"
@@ -94,6 +98,7 @@ export async function blackJadiBot(options) {
 }
 
     if (connection === "open") {
+      global.conns ||= []
       global.conns.push(sock)
       await conn.sendMessage(m.chat, {
         text: `@${m.sender.split("@")[0]}, ¡ya estás conectado como SubBot!`,
@@ -107,18 +112,25 @@ export async function blackJadiBot(options) {
 
 // ✅ Handler que responde a.qr y.code
 async function handler(m, { conn, args, usedPrefix, command}) {
+  global.db ||= { data: { users: {}, settings: {}, chats: {}}}
+  global.db.data.users ||= {}
+  global.db.data.settings ||= {}
+
   const botSettings = global.db.data.settings[conn.user.jid] ||= {}
   if (!botSettings.jadibotmd) return m.reply('⚠️ El comando está desactivado temporalmente.')
 
   const cooldown = 10000
   const now = Date.now()
-  const lastTime = global.db.data.users[m.sender]?.Subs || 0
+  global.db.data.users[m.sender] ||= {}
+  const lastTime = global.db.data.users[m.sender].Subs || 0
+
   if (now - lastTime < cooldown) {
     const wait = msToTime(cooldown - (now - lastTime))
     return conn.reply(m.chat, `⏳ Espera ${wait} antes de volver a vincular un SubBot.`, m)
 }
 
-  const activeBots = global.conns.filter(conn => conn.user && conn.ws.socket && conn.ws.socket.readyState!== ws.CLOSED)
+  global.conns ||= []
+  const activeBots = global.conns.filter(conn => conn?.user && conn?.ws?.socket && conn.ws.socket.readyState!== ws.CLOSED)
   if (activeBots.length>= 40) {
     return conn.reply(m.chat, `${emoji2} No hay espacios disponibles para nuevos SubBots.`, m)
 }
@@ -138,7 +150,6 @@ async function handler(m, { conn, args, usedPrefix, command}) {
 }
 
   await blackJadiBot(options)
-  global.db.data.users[m.sender] ||= {}
   global.db.data.users[m.sender].Subs = now
 }
 
